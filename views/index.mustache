@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="/style.css">
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="/inf.js"></script> <!-- ne trouve pas le fichier -->
+    <title>{{title}}</title>
+    <style>
+    
+        #randomize{
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+<body>
+    <label for="basic-url">Choisi un url</label>
+
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon3">https://localhost/game/</span>
+        <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+        <span class="input-group-addon" id="randomize">Randomize</span>
+    </div>
+    <button type="button" class="btn btn-primary" id="start-game">Lancer la partie</button>
+    <script>
+        
+        function randomize(){
+            var r = Math.random().toString(36).substr(4, 11).toUpperCase(); 
+            return r;
+        }
+        
+        $('#randomize').on('click', function(){
+ 
+            $('#basic-url').val(randomize());
+        });
+        
+        $('#start-game').on('click', function(){
+            var url = "/game/" + $('#basic-url').val();
+            document.location.href= url;
+            
+            
+        });
+    </script>
+</body>
+</html>
