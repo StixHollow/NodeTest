@@ -3,18 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>Party - {{title}}</title>
 </head>
 <body>
    <h1>BIENVENU SUR NOTRE PARTI</h1>
-    <div enemy-space></div>
-    <div my-space></div>
+    <div>Donne cet URL à tes ami-e-s<input class="form-control" aria-describedby="basic-addon3" id="url-party"></input> </div>
+    <div id="enemy-space"></div>
+    <div id="my-space"></div>
+    <div id="serveurmsg"></div>
     <script>
             
         var socket = io.connect('http://localhost:8080');
         
+
+        $("#url-party").val($(location).attr('href'));
+        $("#url-party").on('click', function(){ this.select(); });
+        socket.on('ConnectSuccess', function(msg) {
+            $("#serveurmsg").append('<div class="alert alert-success" role="alert">' + msg +'</div>');
+        });
+        
+        socket.on('NewConnection', function(msg) {
+            $("#serveurmsg").append('<div class="alert alert-info" role="alert">' + msg +'</div>');
+        });
         
     </script>
 </body>
