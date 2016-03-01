@@ -1,8 +1,12 @@
 {
-  "name": "Cheater",
-  "version": "0.0.1",
+    "name": "Cheater",
+    "version": "0.0.1",
+    "description": "Little card game",
+    "repository": "/",
+    "license": "CC",
+    
  
-  "dependencies": {
+    "dependencies": {
     "express": "*"
   }
 }

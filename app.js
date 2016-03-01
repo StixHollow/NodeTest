@@ -16,6 +16,7 @@ app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 
+//app.use(session({secret: 'SuperNain777'}));
 
 /* --- ROUTE --- */
 app.get('/', function(req, res){
@@ -54,9 +55,14 @@ io.sockets.on('connection', function (socket) {
     socket.join(room);
     console.log('Nouvelle utilisateur-trice connecté-e à la partie ' + room);
 
-    socket.to(room).emit("NewConnection", "Nouvelle utilisateur-trice");
-    socket.emit("ConnectSuccess", "Connection Reussi");
+    socket.to(room).emit("msgToUser", "Nouvelle utilisateur-trice");
+    socket.emit("ConnectSuccess", { msg: 'Connextion au serveur établie avec la partie : ', room: room });
     
+    socket.on('disconnect', function (room) {
+        console.log(room + " a quitté le chat");
+        socket.broadcast.emit("msgToUser", "Un utilisateur à quitté la partie");
+        socket.leave(room);
+    });	
     
 });
 

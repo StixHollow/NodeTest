@@ -14,17 +14,24 @@
             cursor: pointer;
         }
         
+        #errormsg{
+           color: red;
+        }
+        
     </style>
 </head>
 <body>
     <label for="basic-url">Choisi un url</label>
 
-    <div class="input-group">
+    <div class="input-group" id="party-location">
         <span class="input-group-addon" id="basic-addon3">https://localhost/game/</span>
         <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
         <span class="input-group-addon" id="randomize">Randomize</span>
+        
     </div>
+    
     <button type="button" class="btn btn-primary" id="start-game">Lancer la partie</button>
+    
     <script>
         
         function randomize(){
@@ -32,14 +39,25 @@
             return r;
         }
         
+        var errorMsgDisplay = false;
+                
         $('#randomize').on('click', function(){
  
             $('#basic-url').val(randomize());
         });
         
         $('#start-game').on('click', function(){
-            var url = "/game/" + $('#basic-url').val();
-            document.location.href= url;
+            if($('#basic-url').val().length > 5 ) {
+                var url = "/game/" + $('#basic-url').val();
+                document.location.href= url;
+            } else {
+                $("#party-location").addClass("has-error");
+                if (!errorMsgDisplay){
+                    errorMsgDisplay = true;
+                    $("#start-game").after("<div id='errormsg' class='danger'>Le nom doit contenir au minimum 5 caractère</div>");
+            
+                }
+            }
             
             
         });
