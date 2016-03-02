@@ -1,28 +1,50 @@
 'use strict'; 
 
 var conf = require( __dirname  + "/js/config.js" );
+var deck = require( __dirname  + "/js/Deck.class.js" );
+var game = require( __dirname  + "/js/Game.class.js" );
+var msg = conf.getMsgServer();
+
+var d = new deck();
+console.log(d.setDeck());
 
 /* -- Module de nodejs -- */
+// -> https://github.com/marak/colors.js/
 require('colors');
+
 var express = require('express');
 var app = express();
 var mustacheExpress = require('mustache-express');
 var url = require('url');
 //var session = require('express-session');
 
+// -> https://openclassrooms.com/courses/des-applications-ultra-rapides-avec-node-js/socket-io-passez-au-temps-reel
+// -> http://www.learnfast.ninja/posts/53a6b961d972e2e411bf82f2
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-var listener = server.listen(8080);
+/* -- end - Module de nodejs -- */
+
+var listener = server.listen(conf.port);
 
 var Games = [];
 
+/*  how to creat a new class
+    // http://stackoverflow.com/questions/6998355/including-javascript-class-definition-from-another-file-in-node-js
+    var g = new game('aisdhiashd');
+    console.log(g.create());
+*/
+
 // permet l'utilisation de mustache template
+// -> https://www.npmjs.com/package/mustache-express
 app.engine('mustache', mustacheExpress());
 
 // Met en place le systeme de vue
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
+
+// -> http://mustache.github.io/#demo
+
 
 /*
 app.use(session({
@@ -39,6 +61,7 @@ app.use(function (req, res, next) {
 */
 
 /* --- ROUTE --- */
+// -> https://openclassrooms.com/courses/des-applications-ultra-rapides-avec-node-js/le-framework-express-js
 app.get('/', function(req, res){
   res.render('index', {
     
@@ -64,10 +87,11 @@ app.get('/', function(req, res){
 /* --- END ROUTE --- */
 
 
-// Reception d'une nouvelle connection
+/* ---- SOCKET CONNECTION ---- */
 io.sockets.on('connection', function (socket) {
     
     // recupération de l'url de la partie
+    // -> https://nodejs.org/api/url.html
     var u = url.parse(socket.handshake.headers.referer).pathname;
     var room = u.substr(u.lastIndexOf('/') + 1);
    
@@ -80,20 +104,25 @@ io.sockets.on('connection', function (socket) {
        */ 
     
     // ajout de l'utilisateur-trice à la room de la partie
+    // -> http://socket.io/docs/rooms-and-namespaces/
     socket.join(room);
-    console.log('Nouvelle utilisateur-trice connecté-e à la partie '.blue + room + 'Nb de player : ' );
+    console.log((msg['210'] + room).toString().cyan);
 
-    socket.broadcast.to(room).emit("msgToUser", "Nouvelle utilisateur-trice");
-    socket.emit("ConnectSuccess", { msg: 'Connextion au serveur établie avec la partie : ', room: room });
+    // envoi à tout les utilisateur-trice-s le message de nouvelles connection
+    socket.broadcast.to(room).emit("msgToUser", msg['300']);
+    socket.emit("ConnectSuccess", { msg: msg['200'], room: room });
     
+    // gestion du click sur le bouton de déconnection
     socket.on('disconnectmsg', function(room){
-        console.log('Un utilisateur-trice en moins sur ' + room);
-        socket.broadcast.to(room).emit("msgToUser", "Un utilisateur-trice à quitté la partie");
+        console.log((msg['212'] + room).toString().orange);
+        socket.broadcast.to(room).emit("msgToUser", msg['302']);
         //Games[room] // Modifier utilisateur
         socket.leave(room);
     });
     
 });
 
+/* ---- END SOCKET CONNECTION ---- */
 
-console.log('Application en marche sur le port '.green + listener.address().port); //Listening on port 8080
+
+console.log((msg['100'] + listener.address().port).toString().green); //Listening on port 8080
