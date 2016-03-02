@@ -6,7 +6,6 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
-    <link rel="stylesheet" href="style.css">
     <title>Party - {{title}}</title>
     <style>
         
@@ -29,7 +28,7 @@
             <span class="input-group-addon" id="basic-addon3">Donne cet URL à tes ami-e-s</span>
             <input class="form-control" aria-describedby="basic-addon3" id="url-party"></input> 
         </div>
-        <button type="button" class="btn btn-default" id="disconnect">Deconnextion</button>
+        <button type="button" class="btn btn-default" id="disconnect">Déconnection</button>
 
     </div>
 
@@ -37,29 +36,29 @@
     <div id="my-space"></div>
     <div id="servermsg"></div>
     <script>
-            
-        var socket = io.connect('http://localhost:8080');
-        var roomName;
+        
+        $(function(){    
+            var socket = io.connect('http://localhost:8080');
+            var roomName;
 
-        $("#url-party").val($(location).attr('href'));
-        $("#url-party").on('click', function(){ this.select(); });
+            $("#url-party").val($(location).attr('href'));
+            $("#url-party").on('click', function(){ this.select(); });
+
+            socket.on('ConnectSuccess', function(data) {
+                roomName = data.room;
+                $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
+            });
+
+            socket.on('msgToUser', function(msg) {
+                $("#servermsg").append('<div class="alert alert-info msgctrl"  role="alert">' + msg +'</div>');
+            });
+
+            $("#disconnect").on('click', function(){ 
+                socket.emit('disconnectmsg', roomName);
+                document.location.href= "/";
+            });
         
-        
-        
-        socket.on('ConnectSuccess', function(data) {
-            roomName = data.room;
-            $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
-        });
-        
-        socket.on('msgToUser', function(msg) {
-            $("#servermsg").append('<div class="alert alert-info msgctrl"  role="alert">' + msg +'</div>');
-        });
-        
-        $("#disconnect").on('click', function(){ 
-            socket.emit('disconnect', roomName);
-            document.location.href= "/";
-        });
-        
+        });  
     </script>
 </body>
 </html>

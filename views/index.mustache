@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../style.css">
     
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="/inf.js"></script> <!-- ne trouve pas le fichier -->
     <title>{{title}}</title>
     <style>
     
@@ -25,7 +24,7 @@
 
     <div class="input-group" id="party-location">
         <span class="input-group-addon" id="basic-addon3">https://localhost/game/</span>
-        <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+        <input type="text" class="form-control" id="basic-url"  placeholder="" aria-describedby="basic-addon3">
         <span class="input-group-addon" id="randomize">Randomize</span>
         
     </div>
@@ -38,9 +37,11 @@
             var r = Math.random().toString(36).substr(4, 11).toUpperCase(); 
             return r;
         }
-        
+            
         var errorMsgDisplay = false;
                 
+        $('#basic-url').attr("placeholder", randomize());
+        
         $('#randomize').on('click', function(){
  
             $('#basic-url').val(randomize());
