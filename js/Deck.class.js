@@ -3,10 +3,10 @@
     
     -> http://openmymind.net/2012/2/3/Node-Require-and-Exports/
 */
-function Deck(room) {	
+function Deck() {	
     
-    this.deck = []; 
-    
+    this.deck = this.mixDeck(this.setDeck());
+    this.nbCardInDeck = this.deck.length;
 
 }
 
@@ -15,7 +15,7 @@ Deck.prototype.setDeck = function() {
     var sign = ['K', 'C', 'P', 'T'];
     var ext = '.BMP';
     var nameCard;
-    var deckOrder = [];
+    var deckOrder = new Array;
 
     for (i = 0; i <= 3; i++) {
         for (j = 1; j < 14 ; j++) {
@@ -27,36 +27,37 @@ Deck.prototype.setDeck = function() {
 }
 
 Deck.prototype.mixDeck = function(deck) {
-    // !!!!!!!!!!!! à commenter et tester !!!!!!!!!!!!!
-    var mixedDeck = [];
-    var nbTurn = 51; // je ne sais pas trop à quoi ça sert la
-    var index = 0; // index aleatoire ou va être placé la carte
-    var nbCard = 52;
-    var calc = 0;
     
-    for (i = 0; i <= nbTurn; i++) {
-        if ((i % 2) == 1 && i != 0 ) {
-            do {
-                index = (Math.random() * (nbCard-1));
-            } while ( i == 0 || i == nbTurn || ((i > 0) && (mixedDeck[i -1].substring(2,3) != deck['index'].substring(2,3))) )
-        } else {
-            index = (Math.random() * (nbCard-1));
-        }
+    var index; // index à changer
+    var save; // valeur tmp
     
-        mixedDeck[i] = deck[index];
+    for(i = deck.length-1; i >= 1; i--){
+	
+	   //hasard reçoit un nombre entier aléatoire entre 0 et position
+	   index=Math.floor(Math.random()*(i+1));
+	
+	   //Echange
+	   save = deck[i];
+	   deck[i] = deck[index];
+	   deck[index] = save;
 
-        for (j = 0; j < (nbCard - index); j++) { 
-     
-            if ((index + j +1) < NbCard) { 
-                calc = index + j + 1;
-                deck[index + j] = mixedDeck[calc];
-            }
-       
-        }
-     
-        deck.splice(nbCard -1);
-        nbCard = nbCard - 1;
     }
+    return deck;  
+}
+
+Deck.prototype.takeCard = function() {
+   
+    var card;
+    
+    if(this.nbCardInDeck != 0){
+        card = this.deck[this.deck.length - 1];
+        this.deck.pop();
+        this.nbCardInDeck--;
+    } else {
+        card = false;
+    }
+    
+    return card;  
 }
 
 module.exports = Deck;
