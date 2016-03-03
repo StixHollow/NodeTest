@@ -5,9 +5,6 @@ var deck = require( __dirname  + "/js/Deck.class.js" );
 var game = require( __dirname  + "/js/Game.class.js" );
 var msg = conf.getMsgServer();
 
-var d = new deck();
-console.log(d.setDeck());
-
 /* -- Module de nodejs -- */
 // -> https://github.com/marak/colors.js/
 require('colors');
@@ -106,6 +103,18 @@ io.sockets.on('connection', function (socket) {
     // ajout de l'utilisateur-trice à la room de la partie
     // -> http://socket.io/docs/rooms-and-namespaces/
     socket.join(room);
+    
+    if (typeof Games.room == 'undefined'){
+        var d = new deck();
+        Games[room] = new game(room, d);
+        Games[room].newPlayerConnected();
+    } else {
+        Games[room].newPlayerConnected();
+    }
+    
+    // http://stackoverflow.com/questions/31468473/how-to-get-socket-io-number-of-clients-in-room
+    // var useroom = io.sockets.adapter.rooms[room];
+    
     console.log((msg['210'] + room).toString().cyan);
 
     // envoi à tout les utilisateur-trice-s le message de nouvelles connection
