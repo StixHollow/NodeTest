@@ -104,14 +104,15 @@ io.sockets.on('connection', function (socket) {
     // -> http://socket.io/docs/rooms-and-namespaces/
     socket.join(room);
     
-    if (typeof Games.room == 'undefined'){
+    
+    if (typeof Games[room] == 'undefined'){
         var d = new deck();
         Games[room] = new game(room, d);
         Games[room].newPlayerConnected();
     } else {
         Games[room].newPlayerConnected();
+
     }
-    
     // http://stackoverflow.com/questions/31468473/how-to-get-socket-io-number-of-clients-in-room
     // var useroom = io.sockets.adapter.rooms[room];
     
@@ -119,7 +120,19 @@ io.sockets.on('connection', function (socket) {
 
     // envoi à tout les utilisateur-trice-s le message de nouvelles connection
     socket.broadcast.to(room).emit("msgToUser", msg['300']);
-    socket.emit("ConnectSuccess", { msg: msg['200'], room: room });
+    socket.emit("ConnectSuccess", { msg: msg['200'], room: room, dirname: __dirname });
+        
+    if (io.sockets.adapter.rooms[room].length == 2) {
+        console.log((msg['224'] + room).toString().magenta);
+        socket.to(room).emit("msgToUser", msg['304']);
+        socket.emit("msgToUser", msg['304']);
+    
+        if (Games[room].start()){
+            socket.emit("cards", { myDeck:  Games[room].cardPlayer[0] });
+            socket.to(room).emit("cards", { myDeck:  Games[room].cardPlayer[1] });
+            console.log(msg['226'].toString().grey);
+        }
+    }
     
     // gestion du click sur le bouton de déconnection
     socket.on('disconnectmsg', function(room){

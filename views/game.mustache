@@ -38,20 +38,33 @@
     <div id="servermsg"></div>
     <script>
         
-        $(function(){    
+        $(function(){   
+            const dir = '/views/cards/';
             var socket = io.connect('http://localhost:8080');
             var roomName;
-
+            var rootdir;
+            
+            
             $("#url-party").val($(location).attr('href'));
             $("#url-party").on('click', function(){ this.select(); });
 
             socket.on('ConnectSuccess', function(data) {
                 roomName = data.room;
+                rootdir = data.dirname; // BIG BUG STILL NOT FIND THE FUCKING PATH
                 $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
             });
 
             socket.on('msgToUser', function(msg) {
                 $("#servermsg").append('<div class="alert alert-info msgctrl"  role="alert">' + msg +'</div>');
+            });
+            
+            socket.on('cards', function(data) {
+                console.log(data);
+                for (i = 0; i < data.myDeck.length; i++){
+                    $("#my-space").append('<img class="" src="' + dir + data.myDeck[i] + '">' );
+                    $("#my-space").append('<div class="">' + dir + data.myDeck[i] + '</div>' );
+                }
+                
             });
 
             $("#disconnect").on('click', function(){ 
