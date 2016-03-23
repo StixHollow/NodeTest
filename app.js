@@ -142,6 +142,7 @@ io.sockets.on('connection', function (socket) {
         
     // lancement de la partie si le nombre de joueurs est superieur à 2
     if (io.sockets.adapter.rooms[room].length == 2) {
+        
         // affichage que la partie peut commencer
         console.log((msg[224] + room).toString().magenta);
         // envoi du message que la partie peut commencer
@@ -150,23 +151,36 @@ io.sockets.on('connection', function (socket) {
         
         // distribution des cartes aux joueurs
         if (Games[room].start()){
+            
             // envoi au joueur 0
-            socket.emit("cards", { myDeck:  Games[room].cardPlayer[0] });
+            socket.emit("cards", {
+                
+                myDeck:  Games[room].cardPlayer[0],
+                type: 'startDeck'
+            
+            });
             // envoi au joueur 1
-            socket.to(room).emit("cards", { myDeck:  Games[room].cardPlayer[1] });
+            
+            socket.to(room).emit("cards", { 
+                myDeck:  Games[room].cardPlayer[1],
+                type: 'startDeck'
+            });
             // affichage de l'envoi des cartes
             console.log(msg[226].toString().grey);
+            
         }
     }
     
     // gestion du click sur le bouton de deconnection
     socket.on('disconnectmsg', function(room){
+        
         // affichage qu'un joueur c'est deconnecte 
         console.log((msg[202] + room).toString().orange); // ---> ERREUR IMPOSSIBLE DE FAIRE UN CONSOLELOG ICI ??????
         // Envoi du message de deconnection aux joueurs
         socket.broadcast.to(room).emit("msgToUser", msg[302]);
         //Games[room] // Modifier utilisateur
         socket.leave(room); // suppression du joueur de la partie
+        
     });
     
 });

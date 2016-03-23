@@ -32,6 +32,7 @@ Game.prototype.CanStart = function() {
 }
 
 Game.prototype.start = function() {
+    
     // initialisation des decks
     for (i = 0; i < this.MAX_PLAYER; i++) {
         this.cardPlayer[i] = new Array();

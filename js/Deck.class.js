@@ -10,6 +10,9 @@ function Deck() {
 
 }
 
+/* 
+    Initialise le deck dans l'ordre
+*/
 Deck.prototype.setDeck = function() {
     
     var sign = ['K', 'C', 'P', 'T'];
@@ -26,6 +29,9 @@ Deck.prototype.setDeck = function() {
     return deckOrder;
 }
 
+/* 
+    Mélange le deck
+*/
 Deck.prototype.mixDeck = function(deck) {
     
     var index; // index à changer
@@ -45,6 +51,17 @@ Deck.prototype.mixDeck = function(deck) {
     return deck;  
 }
 
+/* 
+    Recupération du nom de la carte
+*/
+Deck.prototype.parseCardName = function(card){
+    var name = card.substring(0, card.lastIndexOf('.'));
+    return name;
+}
+
+/* 
+    Pioche un carte
+*/
 Deck.prototype.takeCard = function() {
    
     var card;

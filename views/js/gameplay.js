@@ -32,6 +32,20 @@ function installEvent(){
     // selection du contenu de l'input avec l'url de la partie
     $("#url-party").on('click', function(){ this.select(); });   
 }
+function onClickCard(){
+    alert(this.dataset.cardName);
+}
+
+// met en place la main de l'utilisateur
+function setHandUser(myDeck){
+    $("#my-space").empty();
+    for (i = 0; i < myDeck.length; i++){
+        $("#my-space").append('<img class="cardImg" src="' + dirImgCards + myDeck[i] + '" data-cardName="' + myDeck[i] + '">' );
+        // $(".cardImg").on('click', onClickCard()); 
+        // BUG AVEC LA RECUPERATION DU DATASET BORDEL
+        // $("#my-space").append('<div class="">' + dirImgCards + data.myDeck[i] + '</div>' );
+    }
+}
 
 // Installation des listeners des messages du serveur
 function iniListenerServer(){
@@ -55,10 +69,15 @@ function iniListenerServer(){
     socket.on('cards', function(data) {
         console.log(data);
         // affichage du deck envoyers par le serveur
-        for (i = 0; i < data.myDeck.length; i++){
-            $("#my-space").append('<img class="" src="' + dirImgCards + data.myDeck[i] + '">' );
-            // $("#my-space").append('<div class="">' + dirImgCards + data.myDeck[i] + '</div>' );
+        switch (data.type){
+            case 0:
+            case 'startDeck':
+                setHandUser(data.myDeck);
+            break;
+                
+                
         }
+        
 
     });
     
