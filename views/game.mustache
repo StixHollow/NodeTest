@@ -3,27 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 
+    <script src="/js/inf.js"></script>
+    <script src="/js/gameplay.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     
-    <title>Party - {{title}}</title>
-    <style>
-        
-        .msgctrl {
-            margin-bottom: 0px;
-        }
-        
-        #servermsg{
-            margin-top: 2%;
-            height: 20%;
-            overflow: scroll;
-        }
-        
-    </style>
+    <title>Partie - {{title}}</title>
 </head>
 <body>
-   <h1>BIENVENUE SUR NOTRE PARTI <small id="room"></small></h1>
+   <h1>BIENVENUE SUR VOTRE PARTI <small id="room">{{title}}</small></h1>
     <div id="ctrl-panel" >
         <div class="input-group">
             <span class="input-group-addon" id="basic-addon3">Donne cet URL à tes ami-e-s</span>
@@ -32,46 +23,17 @@
         <button type="button" class="btn btn-default" id="disconnect">Déconnection</button>
 
     </div>
-
     <div id="enemy-space"></div>
     <div id="my-space"></div>
     <div id="servermsg"></div>
     <script>
         
         $(function(){   
-            const dir = '/views/cards/';
-            var socket = io.connect('http://localhost:8080');
-            var roomName;
-            var rootdir;
             
+            ini();
+            installEvent();
+            iniListenerServer();
             
-            $("#url-party").val($(location).attr('href'));
-            $("#url-party").on('click', function(){ this.select(); });
-
-            socket.on('ConnectSuccess', function(data) {
-                roomName = data.room;
-                rootdir = data.dirname; // BIG BUG STILL NOT FIND THE FUCKING PATH
-                $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
-            });
-
-            socket.on('msgToUser', function(msg) {
-                $("#servermsg").append('<div class="alert alert-info msgctrl"  role="alert">' + msg +'</div>');
-            });
-            
-            socket.on('cards', function(data) {
-                console.log(data);
-                for (i = 0; i < data.myDeck.length; i++){
-                    $("#my-space").append('<img class="" src="' + dir + data.myDeck[i] + '">' );
-                    $("#my-space").append('<div class="">' + dir + data.myDeck[i] + '</div>' );
-                }
-                
-            });
-
-            $("#disconnect").on('click', function(){ 
-                socket.emit('disconnectmsg', roomName);
-                document.location.href= "/";
-            });
-        
         });  
     </script>
 </body>
