@@ -137,8 +137,8 @@ io.sockets.on('connection', function (socket) {
     console.log((msg[210] + room).toString().cyan);
 
     // envoi à tout les utilisateur-trice-s le message de nouvelles connection
-    socket.broadcast.to(room).emit("msgToUser", msg[300]);
-    socket.emit("ConnectSuccess", { msg: msg[200], room: room, dirname: __dirname });
+    socket.broadcast.to(room).emit("msgToUser",{ msg: msg[300], type: "info", room: room });
+    socket.emit("msgToUser", { msg: msg[200], type: "success", room: room });
         
     // lancement de la partie si le nombre de joueurs est superieur à 2
     if (io.sockets.adapter.rooms[room].length == 2) {
@@ -146,8 +146,8 @@ io.sockets.on('connection', function (socket) {
         // affichage que la partie peut commencer
         console.log((msg[224] + room).toString().magenta);
         // envoi du message que la partie peut commencer
-        socket.to(room).emit("msgToUser", msg[304]);
-        socket.emit("msgToUser", msg[304]);
+        socket.to(room).emit("msgToUser", { msg: msg[304], type: "info", room: room });
+        socket.emit("msgToUser", { msg: msg[304], type: "info", room: room });
         
         // distribution des cartes aux joueurs
         if (Games[room].start()){
@@ -177,7 +177,7 @@ io.sockets.on('connection', function (socket) {
         // affichage qu'un joueur c'est deconnecte 
         console.log((msg[202] + room).toString().orange); // ---> ERREUR IMPOSSIBLE DE FAIRE UN CONSOLELOG ICI ??????
         // Envoi du message de deconnection aux joueurs
-        socket.broadcast.to(room).emit("msgToUser", msg[302]);
+        socket.broadcast.to(room).emit("msgToUser", { msg: msg[302], type: "info", room: room });
         //Games[room] // Modifier utilisateur
         socket.leave(room); // suppression du joueur de la partie
         

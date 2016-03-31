@@ -31,17 +31,24 @@ function installEvent(){
     
     // selection du contenu de l'input avec l'url de la partie
     $("#url-party").on('click', function(){ this.select(); });   
+    
 }
-function onClickCard(){
-    alert(this.dataset.cardName);
+function onClickCard(event){
+    alert(event.data.card);
+    // event.data.card
 }
 
 // met en place la main de l'utilisateur
 function setHandUser(myDeck){
+    var idCard; 
     $("#my-space").empty();
     for (i = 0; i < myDeck.length; i++){
-        $("#my-space").append('<img class="cardImg" src="' + dirImgCards + myDeck[i] + '" data-cardName="' + myDeck[i] + '">' );
-        // $(".cardImg").on('click', onClickCard()); 
+        idCard = 'card' + i;
+        $("#my-space").append('<img id="' + idCard + '" class="cardImg" src="' + dirImgCards + myDeck[i] + '" data-cardName="' + myDeck[i] + '">' );
+        idCard = "#" + idCard;
+        $(idCard).on('click', {card: myDeck[i]}, onClickCard); 
+        // -> http://api.jquery.com/on/
+        console.log("evenement installé sur la carte " + idCard);
         // BUG AVEC LA RECUPERATION DU DATASET BORDEL
         // $("#my-space").append('<div class="">' + dirImgCards + data.myDeck[i] + '</div>' );
     }
@@ -50,6 +57,7 @@ function setHandUser(myDeck){
 // Installation des listeners des messages du serveur
 function iniListenerServer(){
     
+    /* Remplacé par le msgToUser a vocation général
     // Ecoute la connection avec succes vers le serveur
     socket.on('ConnectSuccess', function(data) {
         // recupération des donnees envoyés par le serveur
@@ -59,10 +67,13 @@ function iniListenerServer(){
         
         $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
     });
-    
+    */
     // recuperation des message du serveur
-    socket.on('msgToUser', function(msg) {
-        $("#servermsg").append('<div class="alert alert-info msgctrl"  role="alert">' + msg +'</div>');
+    socket.on('msgToUser', function(data) {
+        
+        roomName = data.room;
+        typeMsg = data.type;
+        $("#servermsg").append('<div class="alert alert-' + typeMsg + ' msgctrl"  role="alert">' + data.msg + ' (' + roomName + ')</div>');
     });
     
     // recuperation des carte a afficher
