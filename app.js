@@ -6,6 +6,11 @@ var deck = require( __dirname  + "/js/Deck.class.js" );
 var game = require( __dirname  + "/js/Game.class.js" );
 var msg = conf.getMsgServer();
 
+// https://nodejs.org/api/os.html
+var os = require('os');
+var ifaces = os.networkInterfaces();
+var addressIP = ifaces.eth0[0].address;
+
 /* -- Module de nodejs -- */
 // Ajoute les couleurs dans la console -> https://github.com/marak/colors.js/ 
 require('colors');
@@ -84,6 +89,8 @@ app.get('/', function(req, res){
     res.render('game', {
     
         title: req.params.id, // nom de la page
+        connectTo: addressIP,
+        port: listener.address().port
         // path: __dirname // envoi de la path source du serveur -- je ne sais pas s'il y a encore une utilite à ça
     
   });
@@ -188,4 +195,4 @@ io.sockets.on('connection', function (socket) {
 /* ---- END SOCKET CONNECTION ---- */
 
 // affichage du lancement du serveur
-console.log((msg[100] + listener.address().port).toString().green); //Listening on port 8080
+console.log((msg[100] + addressIP + ':' + listener.address().port).toString().green); //Listening on port 8080
