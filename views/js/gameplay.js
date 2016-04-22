@@ -1,7 +1,8 @@
 // lien vers le dossier des cartes
 const dirImgCards = '/cards/';
+
 // url du serveur nodejs
-const urlServer = 'http://localhost:8080';
+var urlServer = ip + ':' + port;;
 
 // variable contenant la socket
 var socket;
