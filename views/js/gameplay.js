@@ -58,7 +58,7 @@ function setHandUser(myDeck){
 // Installation des listeners des messages du serveur
 function iniListenerServer(){
     
-    /* Remplacé par le msgToUser a vocation général
+    /* Remplacé par le msgToUser a vocation plus général
     // Ecoute la connection avec succes vers le serveur
     socket.on('ConnectSuccess', function(data) {
         // recupération des donnees envoyés par le serveur
