@@ -9,7 +9,8 @@ var msg = conf.getMsgServer();
 // https://nodejs.org/api/os.html
 var os = require('os');
 var ifaces = os.networkInterfaces();
-var addressIP = ifaces.eth0[0].address;
+//console.log(ifaces);
+var addressIP = ifaces.en1[1].address;
 
 /* -- Module de nodejs -- */
 // Ajoute les couleurs dans la console -> https://github.com/marak/colors.js/ 
@@ -37,7 +38,7 @@ var Games = [];
 /* --------- END INITIALISATION ------------ */
 
 /*  how to creat a new class
-    // http://stackoverflow.com/questions/6998355/including-javascript-class-definition-from-another-file-in-node-js
+    // -> http://stackoverflow.com/questions/6998355/including-javascript-class-definition-from-another-file-in-node-js
     var g = new game('aisdhiashd');
     console.log(g.create());
 */
@@ -50,7 +51,7 @@ app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 // resolution du problème des ressources dans les views
-// http://stackoverflow.com/questions/18409374/cannot-find-view-in-node-express
+// -> http://stackoverflow.com/questions/18409374/cannot-find-view-in-node-express
 app.use(express.static(__dirname + '/views'));
 
 // -> http://mustache.github.io/#demo
