@@ -4,13 +4,14 @@
 var conf = require( __dirname  + "/js/config.js" );
 var deck = require( __dirname  + "/js/Deck.class.js" );
 var game = require( __dirname  + "/js/Game.class.js" );
+
 var msg = conf.getMsgServer();
 
 // https://nodejs.org/api/os.html
 var os = require('os');
 var ifaces = os.networkInterfaces();
 //console.log(ifaces);
-var addressIP = ifaces.en1[1].address;
+var addressIP = ifaces.lo0[1].address;
 
 /* -- Module de nodejs -- */
 // Ajoute les couleurs dans la console -> https://github.com/marak/colors.js/ 
@@ -50,9 +51,12 @@ app.engine('mustache', mustacheExpress());
 // Met en place le systeme de vue MUSTACHE
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
+
 // resolution du problème des ressources dans les views
 // -> http://stackoverflow.com/questions/18409374/cannot-find-view-in-node-express
 app.use(express.static(__dirname + '/views'));
+
+
 
 // -> http://mustache.github.io/#demo
 
@@ -83,6 +87,8 @@ app.get('/', function(req, res){
         person: 'Partner' // Je ne sais pas encore pourquoi j'ai mis ça
     
   });
+    
+    
 })
 // gestion d'un appelle de partie
 .get('/game/:id', function(req, res) {
@@ -96,12 +102,17 @@ app.get('/', function(req, res){
     
   });
 })
+
+.get('/418', function(req, res) {
+    res.sendStatus(418);
+})
 // redirection erreur 404
 .use(function(req, res, next){
     // page index
     res.redirect('/');
 
 })
+
 
 /* --- END ROUTE --- */
 
@@ -126,18 +137,23 @@ io.sockets.on('connection', function (socket) {
     // -> http://socket.io/docs/rooms-and-namespaces/
     socket.join(room);
     
+    
+    // ip du player
+    var ipPlayer = socket.request.connection.remoteAddress;
+    
     // verification si la parti existe dejà
     if (typeof Games[room] == 'undefined'){
         // creation d'une nouvelle partie et du deck qui va avec
         var d = new deck();
         Games[room] = new game(room, d);
-        // ajout d'un nouveau joueur
-        Games[room].newPlayerConnected();
-    } else {
-        // partie dejà existant, ajout simplement d'un nouveau joueur
-        Games[room].newPlayerConnected();
-
+        // ajout d'un nouveau joueur : envoi de son ip
     }
+    
+    // partie dejà existant, ajout simplement d'un nouveau joueur : envoi de son ip
+    var uidPlayer = Games[room].newPlayerConnected(ipPlayer);
+    
+    socket.emit('divData', {uid : uidPlayer, type : 'uidSetter'})
+                
     // http://stackoverflow.com/questions/31468473/how-to-get-socket-io-number-of-clients-in-room
     // var useroom = io.sockets.adapter.rooms[room];
     
@@ -163,16 +179,17 @@ io.sockets.on('connection', function (socket) {
             // envoi au joueur 0
             socket.emit("cards", {
                 
-                myDeck:  Games[room].cardPlayer[0],
+                myDeck:  Games[room].listPlayer[0].cards,
                 type: 'startDeck'
             
             });
             // envoi au joueur 1
             
             socket.to(room).emit("cards", { 
-                myDeck:  Games[room].cardPlayer[1],
+                myDeck:  Games[room].listPlayer[1].cards,
                 type: 'startDeck'
             });
+            
             // affichage de l'envoi des cartes
             console.log(msg[226].toString().grey);
             

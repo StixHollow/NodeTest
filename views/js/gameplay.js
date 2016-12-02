@@ -2,7 +2,10 @@
 const dirImgCards = '/cards/';
 
 // url du serveur nodejs
-var urlServer = ip + ':' + port;;
+var ip;
+var port; 
+
+var urlServer;
 
 // variable contenant la socket
 var socket;
@@ -12,18 +15,39 @@ var roomName;
 var rootdir;
 
 // initialisation 
-function ini(){
+function ini(ipRecived, portRecived){
+    ip = ipRecived;
+    port = portRecived;
+    
+    urlServer = ip + ':' + port;
+    
+    console.log(urlServer);
     // initiatialisation du lien de l'url de la partie
     $("#url-party").val($(location).attr('href'));
     
-    // connection de la socket
-    socket = io.connect(urlServer);
+    if (localStorage.getItem('CheaterUID') == null){
+        // connection de la socket
+        socket = io.connect(urlServer);
+    } else {
+        
+        socket = io.connect(urlServer, {
+          'reconnection': true,
+          'reconnectionDelay': 500,
+          'reconnectionAttempts': 10
+        });
+        //var uidLocal = localStorage.getItem('CheaterUID');
+        //socket = io.connect(urlServer, {uid : uidLocal});
+        
+    }
+    
 }
 
 // Installation des evenements sur les bouton
 function installEvent(){
     //  Ajout de l'evenemnt de deconnection de la partie
     $("#disconnect").on('click', function(){ 
+        
+        localStorage.removeItem('CheaterUID');
         // emmission d'un message de deconnection
         socket.emit('disconnectmsg', roomName);
         // redirection vers la page d'accueil
@@ -57,18 +81,7 @@ function setHandUser(myDeck){
 
 // Installation des listeners des messages du serveur
 function iniListenerServer(){
-    
-    /* Remplacé par le msgToUser a vocation plus général
-    // Ecoute la connection avec succes vers le serveur
-    socket.on('ConnectSuccess', function(data) {
-        // recupération des donnees envoyés par le serveur
-        roomName = data.room;
-        rootdir = data.dirname;
-        // affichage du message
-        
-        $("#servermsg").append('<div class="alert alert-success msgctrl"  role="alert">' + data.msg + data.room +'</div>');
-    });
-    */
+
     // recuperation des message du serveur
     socket.on('msgToUser', function(data) {
         
@@ -77,12 +90,26 @@ function iniListenerServer(){
         $("#servermsg").append('<div class="alert alert-' + typeMsg + ' msgctrl"  role="alert">' + data.msg + ' (' + roomName + ')</div>');
     });
     
+    socket.on('divData', function(data) {
+        switch (data.type){
+            case 'uidSetter':
+                var uid = data.uid;
+                localStorage.setItem('CheaterUID', uid);
+            break;
+                
+                
+        }    
+        
+         
+    });
+    
     // recuperation des carte a afficher
     socket.on('cards', function(data) {
         console.log(data);
         // affichage du deck envoyers par le serveur
         switch (data.type){
             case 0:
+            // si on envoie les premières carte de lancement du jeu
             case 'startDeck':
                 setHandUser(data.myDeck);
             break;
